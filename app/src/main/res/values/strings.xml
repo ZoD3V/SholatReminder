@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SholatReminder</string>
+    <string name="ex_tanggal">02-05-2021</string>
+    <string name="ex_waktu">04:45</string>
+</resources>
