@@ -1,15 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/data"
-        android:layout_width="wrap_content"
+        android:id="@+id/waktu"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="@string/app_name"
-        android:gravity="center"/>
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="waktu"/>
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/subuh"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="subuh"/>
+
+    <TextView
+        android:id="@+id/dzuhur"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="dzuhur"/>
+
+    <TextView
+        android:id="@+id/ashar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="ashar"/>
+
+    <TextView
+        android:id="@+id/magrib"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="magrib"/>
+
+    <TextView
+        android:id="@+id/isya"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="isya"/>
+
+</LinearLayout>

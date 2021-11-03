@@ -2,57 +2,101 @@ package yayasan.idn.sholatreminder
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import yayasan.idn.sholatreminder.data.DataJakarta
+import yayasan.idn.sholatreminder.data.DataSurabaya
 import yayasan.idn.sholatreminder.network.Config
 import yayasan.idn.sholatreminder.network.Model
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private var dataSubuh = mutableListOf<String>()
-    private var dataDzuhur = mutableListOf<String>()
+
+    val dataTanggal = arrayListOf<String>()
+    val dataSubuh = arrayListOf<String>()
+    val dataDzuhur = arrayListOf<String>()
+    val dataAshar = arrayListOf<String>()
+    val dataMagrib = arrayListOf<String>()
+    val dataIsya = arrayListOf<String>()
+    private lateinit var recyclerView: RecyclerView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val rvWaktu: RecyclerView = findViewById(R.id.tanggal)
-        val rvSubuh: RecyclerView = findViewById(R.id.subuh)
-        val rvDzuhur: RecyclerView = findViewById(R.id.dzuhur)
-//        val rvAshar: RecyclerView = findViewById(R.id.ashar)
-//        val rvMaghrib: RecyclerView = findViewById(R.id.maghrib)
-//        val rvIsya: RecyclerView = findViewById(R.id.isya)
+        recyclerView = findViewById(R.id.rvSholat)
 
-        Config().getService().getModelWaktu().enqueue(object : Callback<Model>{
-            override fun onResponse(
-                call: Call<Model>,
-                response: Response<Model>
-            ) {
-                val hasil = response.body()!!
-                val hasil2 = hasil.results?.datetime
-                if (hasil2 != null) {
-                    for (i in hasil2){
-                        dataSubuh.add(i?.times?.fajr.toString())
-                        dataDzuhur.add(i?.times?.dhuhr.toString())
+        val etCity : EditText = findViewById(R.id.etCity)
+        val btnSubmit : ImageButton = findViewById(R.id.btn_submit)
 
-                        rvSubuh.adapter = Adapter(dataSubuh)
-                        rvDzuhur.adapter = Adapter(dataDzuhur)
+        btnSubmit.setOnClickListener{
+            if (etCity.text.toString().lowercase(Locale.getDefault()) == "jakarta"){
+                Clear()
+                showData(DataJakarta().lat, DataJakarta().lng)
+                Toast.makeText(this, "Jakarta", Toast.LENGTH_LONG).show()
+            } else if (etCity.text.toString().lowercase(Locale.getDefault()) == "surabaya"){
+                Clear()
+                showData(DataSurabaya().lat, DataSurabaya().lng)
+                Toast.makeText(this, "Surabya", Toast.LENGTH_LONG).show()
+            }else {
+                val warning = "Masukkan dengan benar"
+                Toast.makeText(this, warning, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+    fun showData(lng: String, lat: String, ev: String = "8", mo: String = "2021-10") {
 
-                        rvSubuh.layoutManager = LinearLayoutManager(this@MainActivity)
-                        rvDzuhur.layoutManager = LinearLayoutManager(this@MainActivity)
+        Config().getService().getModelWaktu(lat, lng, ev, mo)
+            .enqueue(object : Callback<Model> {
+
+                override fun onResponse(
+                    call: Call<Model>,
+                    response: Response<Model>
+                ) {
+                    val panggil1 = response.body()
+                    val panggil2 = panggil1?.results?.datetime
+
+                    for (list in panggil2!!.indices) {
+                        val waktuSholat = panggil2[list]?.times
+                        val tanggal = panggil2[list]?.date
+
+                        dataTanggal.add(tanggal?.gregorian.toString())
+                        dataSubuh.add(waktuSholat?.fajr.toString())
+                        dataDzuhur.add(waktuSholat?.dhuhr.toString())
+                        dataAshar.add(waktuSholat?.asr.toString())
+                        dataMagrib.add(waktuSholat?.maghrib.toString())
+                        dataIsya.add(waktuSholat?.isha.toString())
+
+                        recyclerView.adapter = Adapter(
+                            dataTanggal,
+                            dataSubuh,
+                            dataDzuhur,
+                            dataAshar,
+                            dataMagrib,
+                            dataIsya
+                        )
+                        recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+                        recyclerView.setHasFixedSize(true)
                     }
                 }
-            }
-
-            override fun onFailure(call: Call<Model>, t: Throwable) {
-                val announce = "Masalah koneksi, 403"
-                Toast.makeText(this@MainActivity, announce, Toast.LENGTH_LONG).show()
-            }
-
-        })
-
+                override fun onFailure(call: Call<Model>, t: Throwable) {
+                    Toast.makeText(this@MainActivity, "$t", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
+
+    private fun Clear() {
+        dataSubuh.clear()
+        dataDzuhur.clear()
+        dataAshar.clear()
+        dataMagrib.clear()
+        dataIsya.clear()
+        dataTanggal.clear()
+    }
+
 }
